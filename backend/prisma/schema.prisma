@@ -1,0 +1,329 @@
+// Rental Property MVP 3.0 - Database Schema
+// Complete schema with 11 tables
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// CORE ENTITIES
+// ============================================================================
+
+model Property {
+  id              Int       @id @default(autoincrement())
+  address         String    @db.NVarChar(255)
+  city            String    @db.NVarChar(100)
+  postalCode      String    @db.NVarChar(20)
+  country         String    @default("Netherlands") @db.NVarChar(50)
+
+  // Purchase info
+  purchaseDate    DateTime
+  purchasePrice   Decimal   @db.Decimal(12, 2)
+  currentValue    Decimal   @db.Decimal(12, 2)
+
+  // Property details
+  propertyType    String?   @db.NVarChar(50)
+  squareMeters    Int?
+  bedrooms        Int?
+  bathrooms       Int?
+
+  // Relationships
+  tenants         Tenant[]
+  invoices        Invoice[]
+  expenses        Expense[]
+  maintenance     MaintenanceRequest[]
+  mortgages       Mortgage[]
+
+  // Metadata
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("properties")
+}
+
+model Tenant {
+  id                  Int       @id @default(autoincrement())
+  propertyId          Int
+  property            Property  @relation(fields: [propertyId], references: [id])
+
+  // Personal info
+  firstName           String    @db.NVarChar(100)
+  lastName            String    @db.NVarChar(100)
+  email               String    @unique @db.NVarChar(255)
+  phone               String?   @db.NVarChar(20)
+
+  // Contract details
+  contractStartDate   DateTime
+  contractEndDate     DateTime?
+
+  // Financial details
+  monthlyRent         Decimal   @db.Decimal(10, 2)
+  serviceCharges      Decimal   @default(0) @db.Decimal(10, 2)
+  utilitiesAdvance    Decimal   @default(0) @db.Decimal(10, 2)
+
+  // Deposit
+  depositAmount       Decimal   @db.Decimal(10, 2)
+  depositPaidDate     DateTime?
+
+  // Status
+  isActive            Boolean   @default(true)
+
+  // Relationships
+  invoices            Invoice[]
+  payments            Payment[]
+  maintenanceRequests MaintenanceRequest[]
+
+  // Metadata
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([propertyId])
+  @@index([email])
+  @@index([isActive])
+  @@map("tenants")
+}
+
+model Invoice {
+  id              Int       @id @default(autoincrement())
+  invoiceNumber   String    @unique @db.NVarChar(50)
+  tenantId        Int
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  propertyId      Int
+  property        Property  @relation(fields: [propertyId], references: [id])
+
+  // Invoice details
+  invoiceDate     DateTime
+  dueDate         DateTime
+  month           Int
+  year            Int
+
+  // Amounts
+  baseRent        Decimal   @db.Decimal(10, 2)
+  serviceCharges  Decimal   @default(0) @db.Decimal(10, 2)
+  utilitiesAdvance Decimal  @default(0) @db.Decimal(10, 2)
+  otherCharges    Decimal   @default(0) @db.Decimal(10, 2)
+  discounts       Decimal   @default(0) @db.Decimal(10, 2)
+  lateFees        Decimal   @default(0) @db.Decimal(10, 2)
+  totalAmount     Decimal   @db.Decimal(10, 2)
+
+  // Status tracking
+  status          String    @db.NVarChar(20) // generated, sent, paid, overdue, cancelled
+  sentDate        DateTime?
+  paidDate        DateTime?
+  emailSent       Boolean   @default(false)
+
+  // Storage
+  pdfBlobUrl      String?   @db.NVarChar(500)
+  pdfSasToken     String?   @db.NVarChar(500)
+
+  // Relationships
+  payments        Payment[]
+
+  // Metadata
+  generatedBy     String?   @db.NVarChar(50) // automated, manual
+  notes           String?   @db.NVarChar(Max)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status])
+  @@index([tenantId])
+  @@index([invoiceDate])
+  @@index([month, year])
+  @@map("invoices")
+}
+
+model Payment {
+  id                  Int       @id @default(autoincrement())
+  invoiceId           Int
+  invoice             Invoice   @relation(fields: [invoiceId], references: [id])
+  tenantId            Int
+  tenant              Tenant    @relation(fields: [tenantId], references: [id])
+
+  // Payment details
+  paymentDate         DateTime
+  amount              Decimal   @db.Decimal(10, 2)
+  paymentMethod       String?   @db.NVarChar(50)
+  paymentReference    String?   @db.NVarChar(100)
+  bankTransactionId   String?   @db.NVarChar(100)
+
+  // Reconciliation
+  matchedAutomatically Boolean  @default(false)
+  matchedByUserId     Int?
+  matchedDate         DateTime?
+
+  // Status
+  status              String    @default("confirmed") @db.NVarChar(20)
+  notes               String?   @db.NVarChar(Max)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([invoiceId])
+  @@index([paymentDate])
+  @@index([status])
+  @@map("payments")
+}
+
+// ============================================================================
+// EXPENSE & MAINTENANCE
+// ============================================================================
+
+model Expense {
+  id                  Int       @id @default(autoincrement())
+  propertyId          Int
+  property            Property  @relation(fields: [propertyId], references: [id])
+  maintenanceRequestId Int?
+  maintenanceRequest  MaintenanceRequest? @relation(fields: [maintenanceRequestId], references: [id])
+
+  // Expense details
+  expenseDate         DateTime
+  category            String    @db.NVarChar(50)
+  subcategory         String?   @db.NVarChar(100)
+  description         String    @db.NVarChar(500)
+  amount              Decimal   @db.Decimal(10, 2)
+
+  // Vendor
+  vendorId            Int?
+  vendor              Vendor?   @relation(fields: [vendorId], references: [id])
+  vendorName          String?   @db.NVarChar(200)
+
+  // Tax
+  isTaxDeductible     Boolean   @default(true)
+  vatAmount           Decimal   @default(0) @db.Decimal(10, 2)
+  vatPercentage       Decimal   @default(21.00) @db.Decimal(5, 2)
+
+  // Documentation
+  receiptBlobUrl      String?   @db.NVarChar(500)
+  invoiceNumber       String?   @db.NVarChar(100)
+
+  // Payment
+  paymentStatus       String    @default("unpaid") @db.NVarChar(20)
+  paymentDate         DateTime?
+  paymentReference    String?   @db.NVarChar(100)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([expenseDate])
+  @@index([category])
+  @@index([propertyId])
+  @@map("expenses")
+}
+
+model MaintenanceRequest {
+  id                      Int       @id @default(autoincrement())
+  propertyId              Int
+  property                Property  @relation(fields: [propertyId], references: [id])
+  tenantId                Int?
+  tenant                  Tenant?   @relation(fields: [tenantId], references: [id])
+
+  // Request details
+  title                   String    @db.NVarChar(200)
+  description             String    @db.NVarChar(Max)
+  category                String    @db.NVarChar(50)
+  priority                String    @db.NVarChar(20)
+
+  // Status workflow
+  status                  String    @default("open") @db.NVarChar(20)
+  reportedDate            DateTime  @default(now())
+  startedDate             DateTime?
+  completedDate           DateTime?
+
+  // Assignment
+  assignedVendorId        Int?
+  assignedVendor          Vendor?   @relation(fields: [assignedVendorId], references: [id])
+  estimatedCost           Decimal?  @db.Decimal(10, 2)
+  actualCost              Decimal?  @db.Decimal(10, 2)
+
+  // Photos
+  photosBlobUrls          String?   @db.NVarChar(Max) // JSON array
+
+  // Resolution
+  resolutionNotes         String?   @db.NVarChar(Max)
+  tenantSatisfactionRating Int?
+
+  // Relationships
+  expenses                Expense[]
+
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  @@index([status])
+  @@index([propertyId])
+  @@index([reportedDate])
+  @@map("maintenance_requests")
+}
+
+model Vendor {
+  id                  Int       @id @default(autoincrement())
+  name                String    @db.NVarChar(200)
+  email               String?   @db.NVarChar(255)
+  phone               String?   @db.NVarChar(20)
+  specialization      String?   @db.NVarChar(100)
+
+  // Performance
+  averageRating       Decimal?  @db.Decimal(3, 2)
+  jobsCompleted       Int       @default(0)
+
+  // Relationships
+  maintenanceRequests MaintenanceRequest[]
+  expenses            Expense[]
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("vendors")
+}
+
+// ============================================================================
+// FINANCIAL
+// ============================================================================
+
+model Mortgage {
+  id                  Int       @id @default(autoincrement())
+  propertyId          Int
+  property            Property  @relation(fields: [propertyId], references: [id])
+
+  lender              String    @db.NVarChar(200)
+  accountNumber       String?   @db.NVarChar(100)
+
+  originalAmount      Decimal   @db.Decimal(12, 2)
+  currentBalance      Decimal   @db.Decimal(12, 2)
+  interestRate        Decimal   @db.Decimal(5, 2)
+
+  startDate           DateTime
+  endDate             DateTime
+  monthlyPayment      Decimal   @db.Decimal(10, 2)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("mortgages")
+}
+
+// ============================================================================
+// SYSTEM
+// ============================================================================
+
+model User {
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique @db.NVarChar(255)
+  passwordHash        String    @db.NVarChar(255)
+
+  firstName           String    @db.NVarChar(100)
+  lastName            String    @db.NVarChar(100)
+
+  role                String    @default("landlord") @db.NVarChar(20) // admin, landlord
+  isActive            Boolean   @default(true)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  lastLoginAt         DateTime?
+
+  @@map("users")
+}
