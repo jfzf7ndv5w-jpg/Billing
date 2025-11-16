@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-11-15T23:56:39.315403",
+  "question": "{\"session_id\":\"e5756eb0-b2e4-4706-9eea-c8fde26287e5\",\"transcript_path\":\"/Users/ldevries/.claude/projects/-Users-ldevries-Documents-Billing/e5756eb0-b2e4-4706-9eea-c8fde26287e5.jsonl\",\"cwd\":\"/Users/ldevries/documents/billing\",\"permission_mode\":\"default\",\"hook_event_name\":\"UserPromptSubmit\",\"prompt\":\"should we use caching?\"}",
+  "choice": {
+    "question": "{\"session_id\":\"e5756eb0-b2e4-4706-9eea-c8fde26287e5\",\"transcript_path\":\"/Users/ldevries/.claude/projects/-Users-ldevries-Documents-Billing/e5756eb0-b2e4-4706-9eea-c8fde26287e5.jsonl\",\"cwd\":\"/Users/ldevries/documents/billing\",\"permission_mode\":\"default\",\"hook_event_name\":\"UserPromptSubmit\",\"prompt\":\"should we use caching?\"}",
+    "chosen_option": "Option A (Recommended)",
+    "reasoning": "After analyzing requirements, constraints, and best practices, Option A provides the best balance of reliability, maintainability, and alignment with project goals",
+    "confidence": 0.7,
+    "agents_consulted": [
+      "Architecture",
+      "Audit",
+      "Performance"
+    ],
+    "alternatives_considered": [
+      "Option B",
+      "Option C"
+    ],
+    "timestamp": "2025-11-15T23:56:39.819969",
+    "choice_id": "choice_20251115_235639",
+    "source": "agents"
+  },
+  "logged_at": "2025-11-15T23:56:39.821121"
+}

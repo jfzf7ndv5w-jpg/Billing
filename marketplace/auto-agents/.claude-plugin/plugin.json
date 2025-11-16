@@ -1,0 +1,16 @@
+{
+  "name": "autonomous-agents",
+  "version": "4.0.0",
+  "description": "Autonomous agent system with automatic question interception via UserPromptSubmit hook. Provides instant answers from knowledge base and multi-agent analysis.",
+  "author": {
+    "name": "Autonomous Agent System"
+  },
+  "repository": "",
+  "keywords": [
+    "agents",
+    "automation",
+    "knowledge-base",
+    "decision-support",
+    "hooks"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-11-15T23:33:21.284339",
+  "question": "{\"session_id\":\"8f534b16-2666-413f-b3f8-a2d8a52d9ca8\",\"transcript_path\":\"/Users/ldevries/.claude/projects/-Users-ldevries-Documents-Billing/8f534b16-2666-413f-b3f8-a2d8a52d9ca8.jsonl\",\"cwd\":\"/Users/ldevries/Documents/Billing\",\"permission_mode\":\"default\",\"hook_event_name\":\"UserPromptSubmit\",\"prompt\":\"  Should we use Docker for deployment?\"}",
+  "choice": {
+    "question": "{\"session_id\":\"8f534b16-2666-413f-b3f8-a2d8a52d9ca8\",\"transcript_path\":\"/Users/ldevries/.claude/projects/-Users-ldevries-Documents-Billing/8f534b16-2666-413f-b3f8-a2d8a52d9ca8.jsonl\",\"cwd\":\"/Users/ldevries/Documents/Billing\",\"permission_mode\":\"default\",\"hook_event_name\":\"UserPromptSubmit\",\"prompt\":\"  Should we use Docker for deployment?\"}",
+    "chosen_option": "Option A (Recommended)",
+    "reasoning": "After analyzing requirements, constraints, and best practices, Option A provides the best balance of reliability, maintainability, and alignment with project goals",
+    "confidence": 0.7,
+    "agents_consulted": [
+      "Architecture",
+      "Audit",
+      "Performance"
+    ],
+    "alternatives_considered": [
+      "Option B",
+      "Option C"
+    ],
+    "timestamp": "2025-11-15T23:33:21.789142",
+    "choice_id": "choice_20251115_233321",
+    "source": "agents"
+  },
+  "logged_at": "2025-11-15T23:33:21.790606"
+}

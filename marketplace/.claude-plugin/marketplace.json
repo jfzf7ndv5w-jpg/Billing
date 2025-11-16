@@ -1,0 +1,13 @@
+{
+  "name": "local-plugins",
+  "owner": {
+    "name": "Local User"
+  },
+  "plugins": [
+    {
+      "name": "autonomous-agents",
+      "source": "./auto-agents",
+      "description": "Autonomous agent system with automatic question interception"
+    }
+  ]
+}
