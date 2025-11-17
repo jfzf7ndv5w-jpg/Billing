@@ -83,7 +83,7 @@ async function main() {
   console.log('✅ Test vendor created:', vendor.name);
 
   // Create test mortgage
-  const mortgage = await prisma.mortgage.upsert({
+  await prisma.mortgage.upsert({
     where: { id: 1 },
     update: {},
     create: {

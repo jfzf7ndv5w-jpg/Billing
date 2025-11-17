@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
 
@@ -16,18 +16,18 @@ datasource db {
 
 model Property {
   id              Int       @id @default(autoincrement())
-  address         String   
-  city            String   
-  postalCode      String   
-  country         String    @default("Netherlands")
+  address         String    @db.NVarChar(255)
+  city            String    @db.NVarChar(100)
+  postalCode      String    @db.NVarChar(20)
+  country         String    @default("Netherlands") @db.NVarChar(50)
 
   // Purchase info
   purchaseDate    DateTime
-  purchasePrice   Decimal  
-  currentValue    Decimal  
+  purchasePrice   Decimal   @db.Decimal(12, 2)
+  currentValue    Decimal   @db.Decimal(12, 2)
 
   // Property details
-  propertyType    String?  
+  propertyType    String?   @db.NVarChar(50)
   squareMeters    Int?
   bedrooms        Int?
   bathrooms       Int?
@@ -52,22 +52,22 @@ model Tenant {
   property            Property  @relation(fields: [propertyId], references: [id])
 
   // Personal info
-  firstName           String   
-  lastName            String   
-  email               String    @unique
-  phone               String?  
+  firstName           String    @db.NVarChar(100)
+  lastName            String    @db.NVarChar(100)
+  email               String    @unique @db.NVarChar(255)
+  phone               String?   @db.NVarChar(20)
 
   // Contract details
   contractStartDate   DateTime
   contractEndDate     DateTime?
 
   // Financial details
-  monthlyRent         Decimal  
-  serviceCharges      Decimal   @default(0)
-  utilitiesAdvance    Decimal   @default(0)
+  monthlyRent         Decimal   @db.Decimal(10, 2)
+  serviceCharges      Decimal   @default(0) @db.Decimal(10, 2)
+  utilitiesAdvance    Decimal   @default(0) @db.Decimal(10, 2)
 
   // Deposit
-  depositAmount       Decimal  
+  depositAmount       Decimal   @db.Decimal(10, 2)
   depositPaidDate     DateTime?
 
   // Status
@@ -90,7 +90,7 @@ model Tenant {
 
 model Invoice {
   id              Int       @id @default(autoincrement())
-  invoiceNumber   String    @unique
+  invoiceNumber   String    @unique @db.NVarChar(50)
   tenantId        Int
   tenant          Tenant    @relation(fields: [tenantId], references: [id])
   propertyId      Int
@@ -103,30 +103,30 @@ model Invoice {
   year            Int
 
   // Amounts
-  baseRent        Decimal  
-  serviceCharges  Decimal   @default(0)
-  utilitiesAdvance Decimal  @default(0)
-  otherCharges    Decimal   @default(0)
-  discounts       Decimal   @default(0)
-  lateFees        Decimal   @default(0)
-  totalAmount     Decimal  
+  baseRent        Decimal   @db.Decimal(10, 2)
+  serviceCharges  Decimal   @default(0) @db.Decimal(10, 2)
+  utilitiesAdvance Decimal  @default(0) @db.Decimal(10, 2)
+  otherCharges    Decimal   @default(0) @db.Decimal(10, 2)
+  discounts       Decimal   @default(0) @db.Decimal(10, 2)
+  lateFees        Decimal   @default(0) @db.Decimal(10, 2)
+  totalAmount     Decimal   @db.Decimal(10, 2)
 
   // Status tracking
-  status          String    // generated, sent, paid, overdue, cancelled
+  status          String    @db.NVarChar(20) // generated, sent, paid, overdue, cancelled
   sentDate        DateTime?
   paidDate        DateTime?
   emailSent       Boolean   @default(false)
 
   // Storage
-  pdfBlobUrl      String?  
-  pdfSasToken     String?  
+  pdfBlobUrl      String?   @db.NVarChar(500)
+  pdfSasToken     String?   @db.NVarChar(500)
 
   // Relationships
   payments        Payment[]
 
   // Metadata
-  generatedBy     String?   // automated, manual
-  notes           String?  
+  generatedBy     String?   @db.NVarChar(50) // automated, manual
+  notes           String?   @db.NVarChar(Max)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -146,10 +146,10 @@ model Payment {
 
   // Payment details
   paymentDate         DateTime
-  amount              Decimal  
-  paymentMethod       String?  
-  paymentReference    String?  
-  bankTransactionId   String?  
+  amount              Decimal   @db.Decimal(10, 2)
+  paymentMethod       String?   @db.NVarChar(50)
+  paymentReference    String?   @db.NVarChar(100)
+  bankTransactionId   String?   @db.NVarChar(100)
 
   // Reconciliation
   matchedAutomatically Boolean  @default(false)
@@ -157,8 +157,8 @@ model Payment {
   matchedDate         DateTime?
 
   // Status
-  status              String    @default("confirmed")
-  notes               String?  
+  status              String    @default("confirmed") @db.NVarChar(20)
+  notes               String?   @db.NVarChar(Max)
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -182,29 +182,29 @@ model Expense {
 
   // Expense details
   expenseDate         DateTime
-  category            String   
-  subcategory         String?  
-  description         String   
-  amount              Decimal  
+  category            String    @db.NVarChar(50)
+  subcategory         String?   @db.NVarChar(100)
+  description         String    @db.NVarChar(500)
+  amount              Decimal   @db.Decimal(10, 2)
 
   // Vendor
   vendorId            Int?
   vendor              Vendor?   @relation(fields: [vendorId], references: [id])
-  vendorName          String?  
+  vendorName          String?   @db.NVarChar(200)
 
   // Tax
   isTaxDeductible     Boolean   @default(true)
-  vatAmount           Decimal   @default(0)
-  vatPercentage       Decimal   @default(21.00)
+  vatAmount           Decimal   @default(0) @db.Decimal(10, 2)
+  vatPercentage       Decimal   @default(21.00) @db.Decimal(5, 2)
 
   // Documentation
-  receiptBlobUrl      String?  
-  invoiceNumber       String?  
+  receiptBlobUrl      String?   @db.NVarChar(500)
+  invoiceNumber       String?   @db.NVarChar(100)
 
   // Payment
-  paymentStatus       String    @default("unpaid")
+  paymentStatus       String    @default("unpaid") @db.NVarChar(20)
   paymentDate         DateTime?
-  paymentReference    String?  
+  paymentReference    String?   @db.NVarChar(100)
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -223,13 +223,13 @@ model MaintenanceRequest {
   tenant                  Tenant?   @relation(fields: [tenantId], references: [id])
 
   // Request details
-  title                   String   
-  description             String   
-  category                String   
-  priority                String   
+  title                   String    @db.NVarChar(200)
+  description             String    @db.NVarChar(Max)
+  category                String    @db.NVarChar(50)
+  priority                String    @db.NVarChar(20)
 
   // Status workflow
-  status                  String    @default("open")
+  status                  String    @default("open") @db.NVarChar(20)
   reportedDate            DateTime  @default(now())
   startedDate             DateTime?
   completedDate           DateTime?
@@ -237,14 +237,14 @@ model MaintenanceRequest {
   // Assignment
   assignedVendorId        Int?
   assignedVendor          Vendor?   @relation(fields: [assignedVendorId], references: [id])
-  estimatedCost           Decimal? 
-  actualCost              Decimal? 
+  estimatedCost           Decimal?  @db.Decimal(10, 2)
+  actualCost              Decimal?  @db.Decimal(10, 2)
 
   // Photos
-  photosBlobUrls          String?   // JSON array
+  photosBlobUrls          String?   @db.NVarChar(Max) // JSON array
 
   // Resolution
-  resolutionNotes         String?  
+  resolutionNotes         String?   @db.NVarChar(Max)
   tenantSatisfactionRating Int?
 
   // Relationships
@@ -261,13 +261,13 @@ model MaintenanceRequest {
 
 model Vendor {
   id                  Int       @id @default(autoincrement())
-  name                String   
-  email               String?  
-  phone               String?  
-  specialization      String?  
+  name                String    @db.NVarChar(200)
+  email               String?   @db.NVarChar(255)
+  phone               String?   @db.NVarChar(20)
+  specialization      String?   @db.NVarChar(100)
 
   // Performance
-  averageRating       Decimal? 
+  averageRating       Decimal?  @db.Decimal(3, 2)
   jobsCompleted       Int       @default(0)
 
   // Relationships
@@ -289,16 +289,16 @@ model Mortgage {
   propertyId          Int
   property            Property  @relation(fields: [propertyId], references: [id])
 
-  lender              String   
-  accountNumber       String?  
+  lender              String    @db.NVarChar(200)
+  accountNumber       String?   @db.NVarChar(100)
 
-  originalAmount      Decimal  
-  currentBalance      Decimal  
-  interestRate        Decimal  
+  originalAmount      Decimal   @db.Decimal(12, 2)
+  currentBalance      Decimal   @db.Decimal(12, 2)
+  interestRate        Decimal   @db.Decimal(5, 2)
 
   startDate           DateTime
   endDate             DateTime
-  monthlyPayment      Decimal  
+  monthlyPayment      Decimal   @db.Decimal(10, 2)
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -312,13 +312,13 @@ model Mortgage {
 
 model User {
   id                  Int       @id @default(autoincrement())
-  email               String    @unique
-  passwordHash        String   
+  email               String    @unique @db.NVarChar(255)
+  passwordHash        String    @db.NVarChar(255)
 
-  firstName           String   
-  lastName            String   
+  firstName           String    @db.NVarChar(100)
+  lastName            String    @db.NVarChar(100)
 
-  role                String    @default("landlord") // admin, landlord
+  role                String    @default("landlord") @db.NVarChar(20) // admin, landlord
   isActive            Boolean   @default(true)
 
   createdAt           DateTime  @default(now())

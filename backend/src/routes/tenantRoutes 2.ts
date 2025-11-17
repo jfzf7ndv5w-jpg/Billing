@@ -1,14 +1,13 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, AuthRequest } from '../middleware/auth';
-import { requireLandlordOrAdmin, requireTenantOwnership } from '../middleware/rbac';
 import { createError } from '../middleware/errorHandler';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-// GET /api/v1/tenants - Get all tenants (landlords and admins only)
-router.get('/', authenticate, requireLandlordOrAdmin, async (req: AuthRequest, res, next) => {
+// GET /api/v1/tenants - Get all tenants
+router.get('/', authenticate, async (req: AuthRequest, res, next) => {
   try {
     const tenants = await prisma.tenant.findMany({
       include: {
@@ -24,8 +23,8 @@ router.get('/', authenticate, requireLandlordOrAdmin, async (req: AuthRequest, r
   }
 });
 
-// GET /api/v1/tenants/:id - Get single tenant (landlords, admins, or tenant themselves)
-router.get('/:id', authenticate, requireTenantOwnership, async (req: AuthRequest, res, next) => {
+// GET /api/v1/tenants/:id - Get single tenant
+router.get('/:id', authenticate, async (req: AuthRequest, res, next) => {
   try {
     const tenant = await prisma.tenant.findUnique({
       where: { id: parseInt(req.params.id) },
@@ -48,8 +47,8 @@ router.get('/:id', authenticate, requireTenantOwnership, async (req: AuthRequest
   }
 });
 
-// POST /api/v1/tenants - Create tenant (landlords and admins only)
-router.post('/', authenticate, requireLandlordOrAdmin, async (req: AuthRequest, res, next) => {
+// POST /api/v1/tenants - Create tenant
+router.post('/', authenticate, async (req: AuthRequest, res, next) => {
   try {
     const tenant = await prisma.tenant.create({
       data: req.body,
@@ -63,8 +62,8 @@ router.post('/', authenticate, requireLandlordOrAdmin, async (req: AuthRequest, 
   }
 });
 
-// PATCH /api/v1/tenants/:id - Update tenant (landlords and admins only)
-router.patch('/:id', authenticate, requireLandlordOrAdmin, async (req: AuthRequest, res, next) => {
+// PATCH /api/v1/tenants/:id - Update tenant
+router.patch('/:id', authenticate, async (req: AuthRequest, res, next) => {
   try {
     const tenant = await prisma.tenant.update({
       where: { id: parseInt(req.params.id) },
@@ -79,8 +78,8 @@ router.patch('/:id', authenticate, requireLandlordOrAdmin, async (req: AuthReque
   }
 });
 
-// DELETE /api/v1/tenants/:id - Deactivate tenant (landlords and admins only)
-router.delete('/:id', authenticate, requireLandlordOrAdmin, async (req: AuthRequest, res, next) => {
+// DELETE /api/v1/tenants/:id - Deactivate tenant
+router.delete('/:id', authenticate, async (req: AuthRequest, res, next) => {
   try {
     const tenant = await prisma.tenant.update({
       where: { id: parseInt(req.params.id) },

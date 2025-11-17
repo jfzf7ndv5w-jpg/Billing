@@ -1,18 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 
-export const validate = (req: Request, res: Response, next: NextFunction): void => {
+export const validate = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    res.status(400).json({
+    return res.status(400).json({
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Invalid request parameters',
         details: errors.array()
       }
     });
-    return;
   }
 
   next();

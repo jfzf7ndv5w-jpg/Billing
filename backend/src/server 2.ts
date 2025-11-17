@@ -3,14 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './config/swagger';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/authRoutes';
 import tenantRoutes from './routes/tenantRoutes';
-import propertyRoutes from './routes/propertyRoutes';
-import invoiceRoutes from './routes/invoiceRoutes';
-import paymentRoutes from './routes/paymentRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -39,63 +34,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // ============================================================================
-// API DOCUMENTATION
-// ============================================================================
-
-/**
- * @openapi
- * /api-docs:
- *   get:
- *     summary: API Documentation
- *     description: Interactive API documentation powered by Swagger UI
- *     tags: [Health]
- */
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customSiteTitle: 'Rental Property MVP 3.0 API Docs',
-  customCss: '.swagger-ui .topbar { display: none }',
-  swaggerOptions: {
-    persistAuthorization: true
-  }
-}));
-
-// Swagger JSON endpoint
-app.get('/api-docs.json', (_req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
-
-// ============================================================================
 // HEALTH CHECK
 // ============================================================================
 
-/**
- * @openapi
- * /health:
- *   get:
- *     summary: Health Check
- *     description: Check if the API server is running
- *     tags: [Health]
- *     responses:
- *       200:
- *         description: Server is healthy
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ok
- *                 timestamp:
- *                   type: string
- *                   format: date-time
- *                 environment:
- *                   type: string
- *                   example: development
- *                 version:
- *                   type: string
- *                   example: 3.0.0
- */
 app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
@@ -111,9 +52,6 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/tenants', tenantRoutes);
-app.use('/api/v1/properties', propertyRoutes);
-app.use('/api/v1/invoices', invoiceRoutes);
-app.use('/api/v1/payments', paymentRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -145,7 +83,6 @@ app.listen(PORT, () => {
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
   console.log(`📊 API Base: http://localhost:${PORT}/api/v1`);
-  console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
   console.log('========================================');
   console.log('');
 });
