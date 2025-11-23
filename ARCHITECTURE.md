@@ -472,6 +472,165 @@
 
 ---
 
+## 🏛️ Governance & Synchronization
+
+> **Purpose**: Ensure frontend and backend remain in perfect sync throughout development and deployment
+
+### Core Governance Principles
+
+1. **Single Source of Truth**: Database schema (Prisma) drives all type definitions
+2. **Type Safety End-to-End**: TypeScript backend → TypeScript frontend → Swift iOS
+3. **API Contract First**: OpenAPI specification defines contracts before implementation
+4. **Automated Synchronization**: Types auto-generated, breaking changes blocked by CI/CD
+
+### Frontend-Backend Sync Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    GOVERNANCE LAYER                              │
+│              (Single Source of Truth)                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  📄 API Contract (OpenAPI/Swagger)                              │
+│     • All endpoints defined                                     │
+│     • Request/response schemas                                  │
+│     • Authentication requirements                               │
+│                                                                  │
+│  📊 Database Schema (Prisma)                                    │
+│     • Single source for data models                             │
+│     • Migrations auto-generated                                 │
+│     • Types exported to all layers                              │
+│                                                                  │
+│  📋 Shared Types Package                                        │
+│     • Generated from Prisma                                     │
+│     • Shared across all projects                                │
+│     • Version controlled                                        │
+│                                                                  │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+            Generates Types & Validates
+                          │
+        ┌─────────────────┴──────────────────┐
+        │                                    │
+        ▼                                    ▼
+┌───────────────────┐              ┌───────────────────┐
+│  BACKEND (Source) │              │ FRONTEND (Consumer)│
+│  • Implements API │              │ • Uses types       │
+│  • Exports types  │──────────────▶│ • Type-safe calls │
+│  • Enforces schema│              │ • Auto-validated   │
+└───────────────────┘              └───────────────────┘
+```
+
+### Type Synchronization Workflow
+
+```
+1. Update Prisma Schema
+   prisma/schema.prisma
+         ↓
+2. Run Migration
+   npx prisma migrate dev
+         ↓
+3. Generate Types
+   Auto-generate TypeScript types
+   Auto-generate Swift types (iOS)
+         ↓
+4. Update API Implementation
+   Backend uses new types
+         ↓
+5. Frontend Updates
+   TypeScript compilation shows errors if incompatible
+   Developer fixes frontend code
+         ↓
+6. CI/CD Validation
+   • Type check passes
+   • Tests pass
+   • Ready to deploy
+```
+
+### Version Control Strategy
+
+**API Versioning**:
+- `/api/v1/...` - Current stable version
+- `/api/v2/...` - Future breaking changes
+
+**Semantic Versioning**:
+- **Major** (v2.0.0): Breaking changes (field removed, type changed)
+- **Minor** (v1.1.0): New features (new optional fields, new endpoints)
+- **Patch** (v1.0.1): Bug fixes (no API changes)
+
+### Change Management
+
+**Non-Breaking Changes** (Safe):
+- ✅ Adding optional fields
+- ✅ Adding new endpoints
+- ✅ Adding new enum values
+- ✅ Relaxing validation
+
+**Breaking Changes** (Requires major version):
+- ❌ Removing fields
+- ❌ Changing field types
+- ❌ Renaming endpoints
+- ❌ Stricter validation
+
+**Breaking Change Process**:
+1. Create new API version
+2. Maintain old version for 6 months
+3. Update all clients to new version
+4. Deprecate old version
+5. Remove after transition period
+
+### Governance Checklist
+
+**Before Every Commit**:
+- [ ] Prisma schema valid
+- [ ] Types generated if schema changed
+- [ ] OpenAPI spec updated if API changed
+- [ ] Backend tests pass
+- [ ] Frontend compiles (no type errors)
+- [ ] Documentation updated
+
+**Before Every Release**:
+- [ ] Full test suite passes
+- [ ] Type compatibility verified
+- [ ] Breaking changes documented
+- [ ] Version bumped correctly
+- [ ] Changelog updated
+
+### Key Governance Rules
+
+1. **Database Schema is Truth**: All models in `prisma/schema.prisma`
+2. **API Contract First**: Write OpenAPI spec before implementation
+3. **No Breaking Changes Without Major Version**: Backward compatibility required
+4. **Type Safety Everywhere**: No `any` types allowed
+5. **Test Coverage Required**: Backend >75%, Frontend >60%
+
+### Deployment Order
+
+**Always Follow This Order**:
+```
+1. Backend deployed first
+   ↓
+2. Health check passes
+   ↓
+3. Frontend deployed second
+   ↓
+4. Smoke tests run
+   ↓
+5. Rollback if failures
+```
+
+**Never**:
+- ❌ Deploy frontend before backend
+- ❌ Deploy breaking changes without frontend update
+- ❌ Deploy without running tests
+
+### Living Document
+
+This governance structure evolves with the project. Review and update after each major milestone (Week 5, Week 8, Week 10).
+
+---
+
 **Generated**: 2025-11-23
-**Version**: 3.1
+**Version**: 3.2
 **Status**: Week 2 Day 3 Complete - Email Integration Done
+**Includes**: Merged Governance Structure for complete reference
