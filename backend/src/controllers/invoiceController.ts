@@ -8,6 +8,7 @@ import {
   getInvoiceGenerationStats
 } from '../services/invoiceService';
 import { pdfService } from '../services/pdfService';
+import { emailService } from '../services/emailService';
 import path from 'path';
 
 const prisma = new PrismaClient();
@@ -267,8 +268,7 @@ export const updateInvoice = async (req: AuthRequest, res: Response) => {
 };
 
 /**
- * Send invoice via email
- * TODO: Implement email sending functionality
+ * Send invoice via email with PDF attachment
  */
 export const sendInvoice = async (req: AuthRequest, res: Response) => {
   try {
@@ -279,10 +279,15 @@ export const sendInvoice = async (req: AuthRequest, res: Response) => {
       throw createError('Invalid invoice ID', 400);
     }
 
+    // Get invoice with full relations for email
     const invoice = await prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: {
-        tenant: true
+        tenant: {
+          include: {
+            property: true
+          }
+        }
       }
     });
 
@@ -290,8 +295,17 @@ export const sendInvoice = async (req: AuthRequest, res: Response) => {
       throw createError('Invoice not found', 404);
     }
 
-    // TODO: Implement actual email sending
-    // For now, just update the status
+    // Check if PDF exists, if not generate it
+    let pdfPath = pdfService.getPDFPath(invoice.invoiceNumber);
+    if (!pdfService.pdfExists(invoice.invoiceNumber)) {
+      console.log('📄 PDF not found, generating...');
+      pdfPath = await pdfService.generateInvoicePDF(invoice);
+    }
+
+    // Send email with PDF attachment
+    const emailResult = await emailService.sendInvoiceEmail(invoice, pdfPath);
+
+    // Update invoice status to 'sent'
     await prisma.invoice.update({
       where: { id: invoiceId },
       data: {
@@ -302,12 +316,17 @@ export const sendInvoice = async (req: AuthRequest, res: Response) => {
     res.json({
       message: 'Invoice sent successfully',
       recipient: invoice.tenant.email,
-      invoiceId: invoice.id
+      invoiceId: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      emailSent: emailResult.sent,
+      simulated: emailResult.simulated || false,
+      messageId: emailResult.messageId
     });
   } catch (error) {
     if (error instanceof Error && 'statusCode' in error) {
       throw error;
     }
+    console.error('Send invoice error:', error);
     throw createError('Failed to send invoice', 500);
   }
 };

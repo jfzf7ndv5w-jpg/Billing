@@ -48,7 +48,7 @@
     ],
     "alternatives_considered": [],
     "learned_date": "2025-11-16T14:50:06.305861",
-    "times_used": 4,
+    "times_used": 5,
     "source": "agents"
   },
   "0962c9efba7b66a8da64bdff7f496bed": {
@@ -100,6 +100,45 @@
     ],
     "alternatives_considered": [],
     "learned_date": "2025-11-23T13:04:37.642828",
+    "times_used": 0,
+    "source": "agents"
+  },
+  "9866436105daddb3e7f37e88c83bd362": {
+    "question": "this is not 'spookygame' project",
+    "chosen_option": "Analysis provided",
+    "reasoning": "Security analysis: Operation is safe with low risk",
+    "confidence": 0.95,
+    "agents_consulted": [
+      "Security"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-23T13:46:17.180036",
+    "times_used": 0,
+    "source": "agents"
+  },
+  "9d6329435bd6e9a917ceaa10a8112600": {
+    "question": "no, the 3d ",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-23T13:47:27.824091",
+    "times_used": 0,
+    "source": "agents"
+  },
+  "e73004e7952881fdcce6bd9661de75ba": {
+    "question": "ok, continue",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-23T14:49:25.701430",
     "times_used": 0,
     "source": "agents"
   }
