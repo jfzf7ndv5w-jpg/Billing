@@ -1,1 +1,80 @@
-{}
+{
+  "7aa28ed115707345d0274032757e8991": {
+    "question": "continue",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-16T00:56:33.057330",
+    "times_used": 6,
+    "source": "agents"
+  },
+  "34d1f91fb2e514b8576fab1a75a89a6b": {
+    "question": "go",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-16T01:03:59.447018",
+    "times_used": 6,
+    "source": "agents"
+  },
+  "d621d3f7c7747ca0aac39b4201cccbf6": {
+    "question": "continue week 2",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-16T01:27:38.607435",
+    "times_used": 0,
+    "source": "agents"
+  },
+  "a6105c0a611b41b08f1209506350279e": {
+    "question": "yes",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-16T14:50:06.305861",
+    "times_used": 4,
+    "source": "agents"
+  },
+  "0962c9efba7b66a8da64bdff7f496bed": {
+    "question": "continue with 1",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-20T21:19:49.733589",
+    "times_used": 0,
+    "source": "agents"
+  },
+  "d321065e184c24cabe24d96580af6fbb": {
+    "question": "continue with plan",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-21T00:20:56.358946",
+    "times_used": 0,
+    "source": "agents"
+  }
+}

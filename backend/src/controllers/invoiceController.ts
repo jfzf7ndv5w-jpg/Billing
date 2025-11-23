@@ -7,6 +7,8 @@ import {
   calculateLateFees,
   getInvoiceGenerationStats
 } from '../services/invoiceService';
+import { pdfService } from '../services/pdfService';
+import path from 'path';
 
 const prisma = new PrismaClient();
 
@@ -421,5 +423,93 @@ export const getGenerationStats = async (req: AuthRequest, res: Response) => {
       throw error;
     }
     throw createError('Failed to fetch generation statistics', 500);
+  }
+};
+
+/**
+ * Generate PDF for a specific invoice
+ * POST /api/v1/invoices/:id/pdf
+ */
+export const generateInvoicePDF = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const invoiceId = parseInt(id);
+
+    if (isNaN(invoiceId)) {
+      throw createError('Invalid invoice ID', 400);
+    }
+
+    // Get invoice with all relations
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      include: {
+        tenant: {
+          include: {
+            property: true
+          }
+        }
+      }
+    });
+
+    if (!invoice) {
+      throw createError('Invoice not found', 404);
+    }
+
+    // Generate PDF
+    const pdfPath = await pdfService.generateInvoicePDF(invoice);
+
+    res.json({
+      message: 'PDF generated successfully',
+      invoiceNumber: invoice.invoiceNumber,
+      pdfPath: path.basename(pdfPath)
+    });
+  } catch (error) {
+    if (error instanceof Error && 'statusCode' in error) {
+      throw error;
+    }
+    throw createError('Failed to generate PDF', 500);
+  }
+};
+
+/**
+ * Download PDF for a specific invoice
+ * GET /api/v1/invoices/:id/pdf/download
+ */
+export const downloadInvoicePDF = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const invoiceId = parseInt(id);
+
+    if (isNaN(invoiceId)) {
+      throw createError('Invalid invoice ID', 400);
+    }
+
+    // Get invoice
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId }
+    });
+
+    if (!invoice) {
+      throw createError('Invoice not found', 404);
+    }
+
+    const pdfPath = pdfService.getPDFPath(invoice.invoiceNumber);
+
+    // Check if PDF exists
+    if (!pdfService.pdfExists(invoice.invoiceNumber)) {
+      throw createError('PDF not found. Please generate PDF first.', 404);
+    }
+
+    // Send PDF file
+    res.download(pdfPath, `${invoice.invoiceNumber}.pdf`, (err) => {
+      if (err) {
+        throw createError('Failed to download PDF', 500);
+      }
+    });
+  } catch (error) {
+    if (error instanceof Error && 'statusCode' in error) {
+      throw error;
+    }
+    throw createError('Failed to download PDF', 500);
   }
 };

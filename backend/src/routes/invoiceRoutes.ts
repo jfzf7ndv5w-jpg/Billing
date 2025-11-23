@@ -10,7 +10,9 @@ import {
   getInvoiceStats,
   generateInvoices,
   applyLateFees,
-  getGenerationStats
+  getGenerationStats,
+  generateInvoicePDF,
+  downloadInvoicePDF
 } from '../controllers/invoiceController';
 
 const router = Router();
@@ -74,6 +76,20 @@ router.post('/', createInvoice);
  * @access  Private
  */
 router.post('/:id/send', sendInvoice);
+
+/**
+ * @route   POST /api/v1/invoices/:id/pdf
+ * @desc    Generate PDF for invoice
+ * @access  Private
+ */
+router.post('/:id/pdf', generateInvoicePDF);
+
+/**
+ * @route   GET /api/v1/invoices/:id/pdf/download
+ * @desc    Download invoice PDF
+ * @access  Private
+ */
+router.get('/:id/pdf/download', downloadInvoicePDF);
 
 /**
  * @route   PATCH /api/v1/invoices/:id
