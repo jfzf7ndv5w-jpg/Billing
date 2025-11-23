@@ -1,0 +1,14 @@
+field,value,description
+company_name,Your Company Name,Company name displayed on invoices
+landlord_name,Your Full Name,Landlord full name
+contact_email,your-email@example.com,Contact email for inquiries
+contact_phone,+31 6 XXXX XXXX,Contact phone number
+bank_name,Your Bank Name,Bank name for payments
+bank_iban,NLXX XXXX XXXX XXXX XX,IBAN number for payments (SENSITIVE)
+invoice_footer_line1,Thank you for your business. For questions please contact your-email@example.com,First line of invoice footer
+invoice_footer_line2,This is a computer-generated invoice and does not require a signature.,Second line of invoice footer
+currency,EUR,Currency code (EUR USD GBP etc)
+currency_symbol,€,Currency symbol
+payment_terms_days,14,Number of days until payment is due
+late_fee_percentage,5,Late fee percentage (5 = 5%)
+late_fee_grace_days,3,Grace period days before late fee applies

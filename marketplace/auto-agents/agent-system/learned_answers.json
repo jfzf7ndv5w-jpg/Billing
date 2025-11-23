@@ -76,5 +76,31 @@
     "learned_date": "2025-11-21T00:20:56.358946",
     "times_used": 0,
     "source": "agents"
+  },
+  "e17b775597c1271495d05412f530d36d": {
+    "question": "next session",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-23T12:40:16.146855",
+    "times_used": 0,
+    "source": "agents"
+  },
+  "e72448ef0499beb1c1c2e86c2ef5557d": {
+    "question": "always proceed",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "learned_date": "2025-11-23T13:04:37.642828",
+    "times_used": 0,
+    "source": "agents"
   }
 }

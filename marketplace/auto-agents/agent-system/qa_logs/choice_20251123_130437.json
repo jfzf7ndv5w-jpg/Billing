@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-11-23T13:04:37.133923",
+  "question": "always proceed",
+  "choice": {
+    "question": "always proceed",
+    "chosen_option": "INSUFFICIENT_INFORMATION",
+    "reasoning": "No learned pattern or specific knowledge for this question. This appears to be a new scenario requiring human expertise and context. Escalating to human decision.",
+    "confidence": 0.3,
+    "agents_consulted": [
+      "Classifier"
+    ],
+    "alternatives_considered": [],
+    "timestamp": "2025-11-23T13:04:37.642693",
+    "choice_id": "choice_20251123_130437",
+    "source": "agents"
+  },
+  "logged_at": "2025-11-23T13:04:37.643460"
+}

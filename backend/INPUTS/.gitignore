@@ -1,0 +1,6 @@
+# INPUTS folder - Contains sensitive configuration data
+# DO NOT commit this folder to version control
+landlord-config.csv
+
+# Keep only the example template
+!landlord-config.example.csv

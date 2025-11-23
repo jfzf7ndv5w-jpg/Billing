@@ -2,6 +2,7 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 import { Invoice, Tenant, Property } from '@prisma/client';
+import { configService } from './configService';
 
 interface InvoiceWithRelations extends Invoice {
   tenant: Tenant & {
@@ -80,19 +81,22 @@ export class PDFService {
    * Add header with logo and company info
    */
   private addHeader(doc: PDFKit.PDFDocument, invoice: InvoiceWithRelations): void {
+    // Get company info from secure config
+    const companyInfo = configService.getCompanyInfo();
+
     // Company name (larger, bold)
     doc
       .fontSize(24)
       .font('Helvetica-Bold')
-      .text('De Vries Property Management', 50, 50);
+      .text(companyInfo.companyName, 50, 50);
 
     // Company details
     doc
       .fontSize(10)
       .font('Helvetica')
-      .text('Landlord: Lennart & Saskia de Vries', 50, 85)
-      .text('Email: landlord@example.com', 50, 100)
-      .text('Phone: +31 6 1234 5678', 50, 115);
+      .text(`Landlord: ${companyInfo.landlordName}`, 50, 85)
+      .text(`Email: ${companyInfo.contactEmail}`, 50, 100)
+      .text(`Phone: ${companyInfo.contactPhone}`, 50, 115);
 
     // Invoice title (right aligned)
     doc
@@ -347,6 +351,9 @@ export class PDFService {
   private addPaymentInfo(doc: PDFKit.PDFDocument, invoice: InvoiceWithRelations): void {
     const yPos = 650;
 
+    // Get payment info from secure config (includes sensitive bank details)
+    const paymentInfo = configService.getPaymentInfo();
+
     doc
       .fontSize(12)
       .font('Helvetica-Bold')
@@ -356,8 +363,8 @@ export class PDFService {
       .fontSize(10)
       .font('Helvetica')
       .text('Please transfer the amount to:', 50, yPos + 25)
-      .text('Bank: ING Bank', 50, yPos + 40)
-      .text('IBAN: NL12 INGB 0001 2345 67', 50, yPos + 55)
+      .text(`Bank: ${paymentInfo.bankName}`, 50, yPos + 40)
+      .text(`IBAN: ${paymentInfo.bankIban}`, 50, yPos + 55)
       .text('Reference: ' + invoice.invoiceNumber, 50, yPos + 70)
       .font('Helvetica-Bold')
       .text('Please include the invoice number in the payment reference.', 50, yPos + 90);
@@ -388,18 +395,21 @@ export class PDFService {
   private addFooter(doc: PDFKit.PDFDocument): void {
     const footerY = 750;
 
+    // Get invoice settings from config
+    const invoiceSettings = configService.getInvoiceSettings();
+
     doc
       .fontSize(8)
       .font('Helvetica')
       .fillColor('#666666')
       .text(
-        'Thank you for your business. For questions, please contact landlord@example.com',
+        invoiceSettings.footerLine1,
         50,
         footerY,
         { align: 'center', width: 495 }
       )
       .text(
-        'This is a computer-generated invoice and does not require a signature.',
+        invoiceSettings.footerLine2,
         50,
         footerY + 15,
         { align: 'center', width: 495 }
@@ -462,8 +472,9 @@ export class PDFService {
    * Format currency (EUR)
    */
   private formatCurrency(amount: number | string | any): string {
+    const invoiceSettings = configService.getInvoiceSettings();
     const num = typeof amount === 'string' ? parseFloat(amount) : typeof amount === 'number' ? amount : parseFloat(amount.toString());
-    return `€${num.toFixed(2)}`;
+    return `${invoiceSettings.currencySymbol}${num.toFixed(2)}`;
   }
 
   /**
